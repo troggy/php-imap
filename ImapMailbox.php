@@ -339,6 +339,7 @@ class ImapMailbox {
 			else {
 				$fileName = !empty($params['filename']) ? $params['filename'] : $params['name'];
 				$fileName = $this->decodeMimeStr($fileName, $this->serverEncoding);
+                $fileName = $this->decodeRFC2231($fileName, $this->serverEncoding);
 			}
 			$attachment = new IncomingMailAttachment();
 			$attachment->id = $attachmentId;
@@ -365,6 +366,27 @@ class ImapMailbox {
 				$this->initMailPart($mail, $subPartStructure, $partNum . '.' . ($subPartNum + 1));
 			}
 		}
+	}
+
+    function isUrlEncoded($string) {
+        $string = preg_replace('/\%20/', '+', $string);
+        $decoded = urldecode($string);
+        return $decoded != $string && urlencode($decoded) == $string;
+    }
+
+    protected function decodeRFC2231($string, $charset = 'UTF-8') {
+        $parts = preg_split('/\'/', $string);
+        if (sizeof($parts) != 3) return $string; // no extended encoding
+
+        $encoding = $parts[0];
+        $data = $parts[2];
+
+        if (!$this->isUrlEncoded($data)) return $string;
+
+        $data = urldecode($data);
+        $data = iconv(strtoupper($encoding), $charset, $data);
+
+        return $data;
 	}
 
 	protected function decodeMimeStr($string, $charset = 'UTF-8') {
