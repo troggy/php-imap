@@ -330,11 +330,9 @@ class ImapMailbox {
 
 		// attachments
         if ($partStructure->ifdisposition && (
-                $partStructure->disposition == 'ATTACHMENT' // attachment
-                || ($partStructure->disposition == 'INLINE' && $partStructure->subtype != 'PLAIN'))) { // inline image
-		$attachmentId = $partStructure->ifid
-			? trim($partStructure->id, " <>")
-                : mt_rand() . mt_rand();
+                strtolower($partStructure->disposition) == 'attachment' // attachment
+                || (strtolower($partStructure->disposition) == 'inline' && $partStructure->subtype != 'PLAIN'))) { // inline image
+            $attachmentId = $partStructure->ifid ? trim($partStructure->id, " <>") : mt_rand() . mt_rand();
 			if(empty($params['filename']) && empty($params['name'])) {
 				$fileName = $attachmentId . '.' . strtolower($partStructure->subtype);
 			}
