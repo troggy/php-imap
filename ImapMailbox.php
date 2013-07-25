@@ -254,7 +254,7 @@ class ImapMailbox {
 		$mail->id = $mailId;
 		$mail->date = date('Y-m-d H:i:s', isset($head->date) ? strtotime($head->date) : time());
 		$mail->subject = $this->decodeMimeStr($head->subject, $this->serverEncoding);
-		$mail->fromName = isset($head->from[0]->personal) ? $this->decodeMimeStr($head->from[0]->personal, $this->serverEncoding) : null;
+		$mail->fromName = isset($head->from[0]->personal) ? trim($this->decodeMimeStr($head->from[0]->personal, $this->serverEncoding), "\"") : null;
 		$mail->fromAddress = strtolower($head->from[0]->mailbox . '@' . $head->from[0]->host);
 
 		$toStrings = array();
@@ -343,7 +343,7 @@ class ImapMailbox {
 			$attachment->id = $attachmentId;
 			$attachment->name = $fileName;
 			if($this->fetchAttachments) {
-                $attachment->filePath = tempnam(sys_get_temp_dir(), 'attachment');
+                $attachment->filePath = tempnam(sys_get_temp_dir(), 'att');
 				file_put_contents($attachment->filePath, $data);
 			}
 			$mail->addAttachment($attachment);
@@ -413,6 +413,71 @@ class IncomingMail {
 	public function getAttachments() {
 		return $this->attachments;
 	}
+
+    /**
+     * @return mixed
+     */
+    public function getFromAddress() {
+        return $this->fromAddress;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFromName() {
+        return $this->fromName;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTextPlain() {
+        return $this->textPlain;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTextHtml() {
+        return $this->textHtml;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSubject() {
+        return $this->subject;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTo() {
+        return $this->to;
+    }
+
+    /**
+     * @return array
+     */
+    public function getReplyTo() {
+        return $this->replyTo;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCc() {
+        return $this->cc;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDate() {
+        return $this->date;
+    }
+
+
 
 	/**
 	 * Get array of internal HTML links placeholders
