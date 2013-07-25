@@ -318,9 +318,12 @@ class ImapMailbox {
 		}
 		if(!empty($partStructure->dparameters)) {
 			foreach($partStructure->dparameters as $param) {
-				$params[strtolower($param->attribute)] = $param->value;
+                $paramParts = preg_split('/\*/', strtolower($param->attribute));
+                $paramName = $paramParts[0];
+				$params[$paramName] .= $param->value;
 			}
 		}
+
 		if(!empty($params['charset'])) {
 			$data = iconv($params['charset'], $this->serverEncoding, $data);
 		}
