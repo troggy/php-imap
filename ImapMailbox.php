@@ -370,10 +370,11 @@ class ImapMailbox {
 		$newString = '';
 		$elements = imap_mime_header_decode($string);
 		for($i = 0; $i < count($elements); $i++) {
-			if($elements[$i]->charset == 'default') {
-				$elements[$i]->charset = 'iso-8859-1';
+			if ($elements[$i]->charset != 'default' && $elements[$i]->charset != $charset ) {
+    			$newString .= mb_convert_encoding($elements[$i]->text, $charset, strtoupper($elements[$i]->charset));
+            } else {
+                $newString .= $elements[$i]->text;
 			}
-			$newString .= iconv(strtoupper($elements[$i]->charset), $charset, $elements[$i]->text);
 		}
 		return $newString;
 	}
